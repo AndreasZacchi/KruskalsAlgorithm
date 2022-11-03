@@ -150,12 +150,13 @@ function getMST(edges, graph) {
   }
   return result;
 }
-function getMSC(mst) {
+function drawMSC(mst) {
   let minCost = 0;
   for (e of mst) {
     minCost += e.weight;
   }
-  return minCost;
+  fill("black");
+  text("Minimum Spanning Cost: " + minCost, 600, 25);
 }
 
 let mst, g, gMST, uf;
@@ -194,7 +195,9 @@ function draw() {
     g.drawVertex(false);
     gMST.drawLines(true, g);
     gMST.drawVertex(true, g);
-    text("Minimum Spanning Cost: " + getMSC(mst), 600, 25);
+
+    drawMSC(mst);
+
     timer = millis();
   }
 }
