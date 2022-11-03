@@ -2,30 +2,83 @@ class Graph {
   constructor(vertex, edges) {
     this.vertex = vertex;
     this.edges = edges;
+    this.visited = [];
+    this.stackV = this.vertex.slice();
+    this.stackE = this.edges.slice();
   }
 
-  drawVertex(mst) {
-    for (let elem of this.vertex) {
-      let x = mst ? elem.x + 400 : elem.x;
-      fill("#26b6c9");
-      circle(x, elem.y, 40);
-      fill("black");
-      text(elem.name, x, elem.y);
+  drawVertex(mst, original) {
+    current = this.stackV.shift();
+    if (!mst) {
+      for (let e of this.vertex) {
+        if (this.visited.includes(e.name)) fill("red");
+        else fill("#26b6c9");
+        circle(e.x, e.y, 40);
+        fill("black");
+        text(e.name, e.x, e.y);
+      }
+      if (current) {
+        if (!this.visited.includes(current.name)) {
+          fill("green");
+          circle(current.x, current.y, 40);
+          fill("black");
+          text(current.name, current.x, current.y);
+        }
+        this.visited.push(current.name);
+      }
+    } else {
+      for (let e of this.vertex) {
+        if (original.visited.includes(e.name)) {
+          fill("#26b6c9");
+          circle(e.x + 400, e.y, 40);
+          fill("black");
+          text(e.name, e.x + 400, e.y);
+        }
+      }
     }
+    noFill();
   }
-  drawLines(mst) {
-    for (let elem of this.edges) {
-      let vertexRef = this.vertex.filter(
-        (el) => el.name == elem.src || el.name == elem.target
-      );
-      let x1 = mst ? vertexRef[0].x + 400 : vertexRef[0].x;
-      let x2 = mst ? vertexRef[1].x + 400 : vertexRef[1].x;
-      let y1 = vertexRef[0].y;
-      let y2 = vertexRef[1].y;
-      fill("black");
-      line(x1, y1, x2, y2);
-      text(elem.weight, (x1 + x2) / 2, (y1 + y2) / 2);
+
+  drawLines(mst, original) {
+    current = this.stackE.shift();
+    if (!mst) {
+      for (let elem of this.edges) {
+        let vertexRef = this.vertex.filter(
+          (el) => el.name == elem.src || el.name == elem.target
+        );
+        fill("black");
+        line(vertexRef[0].x, vertexRef[0].y, vertexRef[1].x, vertexRef[1].y);
+        text(
+          elem.weight,
+          (vertexRef[0].x + vertexRef[1].x) / 2,
+          (vertexRef[0].y + vertexRef[1].y) / 2
+        );
+      }
+    } else {
+      for (let e of this.edges) {
+        if (
+          original.visited.includes(e.src) &&
+          original.visited.includes(e.target)
+        ) {
+          let vertexRef = this.vertex.filter(
+            (el) => el.name == e.src || el.name == e.target
+          );
+          fill("black");
+          line(
+            vertexRef[0].x + 400,
+            vertexRef[0].y,
+            vertexRef[1].x + 400,
+            vertexRef[1].y
+          );
+          text(
+            e.weight,
+            (vertexRef[0].x + vertexRef[1].x) / 2 + 400,
+            (vertexRef[0].y + vertexRef[1].y) / 2
+          );
+        }
+      }
     }
+    noFill();
   }
 }
 class Vertex {
@@ -105,58 +158,42 @@ function getMSC(mst) {
   return minCost;
 }
 
-let mst, g, gMST, uf, stack;
+let mst, g, gMST, uf;
 function setup() {
   createCanvas(800, 800);
   textSize(20);
   textAlign(CENTER, CENTER);
   setFrameRate(1);
 
-  vertex = [new Vertex("A"), new Vertex("B"), new Vertex("C"), new Vertex("D")];
+  vertex = [
+    new Vertex("A"),
+    new Vertex("B"),
+    new Vertex("C"),
+    new Vertex("D"),
+    new Vertex("E"),
+  ];
   edges = [
     new Edge("A", "B", 2),
     new Edge("A", "C", 10),
     new Edge("C", "B", 4),
     new Edge("C", "D", 5),
     new Edge("D", "A", 7),
+    new Edge("E", "B", 4),
   ];
   g = new Graph(vertex, edges);
   uf = new UnionFind(vertex);
   mst = getMST(edges, g);
   gMST = new Graph(vertex, mst);
-  stack = g.vertex.slice();
 }
 
 let timer = 0;
-let visited = [];
 function draw() {
-  if (millis() >= 1000 + timer) {
+  if (millis() >= 400 + timer) {
     background("white");
-    for (let e of g.vertex) {
-      if (visited.includes(e.name)) fill("red");
-      else fill("#26b6c9");
-      circle(e.x, e.y, 20);
-      fill("black");
-      text(e.name, e.x, e.y);
-    }
-    if (stack.length > 0) {
-      current = stack.shift();
-      if (!visited.includes(current.name)) {
-        fill("green");
-        circle(current.x, current.y, 20);
-        fill("black");
-        text(current.name, current.x, current.y);
-      }
-      visited.push(current.name);
-
-      noFill();
-    }
-
     g.drawLines(false);
-    //g.drawVertex(false);
-
-    gMST.drawLines(true);
-    gMST.drawVertex(true);
+    g.drawVertex(false);
+    gMST.drawLines(true, g);
+    gMST.drawVertex(true, g);
     text("Minimum Spanning Cost: " + getMSC(mst), 600, 25);
     timer = millis();
   }
