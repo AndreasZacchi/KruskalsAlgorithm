@@ -2,82 +2,61 @@ class Graph {
   constructor(vertex, edges) {
     this.vertex = vertex;
     this.edges = edges;
+    this.mst = calcMST(vertex, edges);
+    this.stackE = this.mst.slice();
     this.visited = [];
-    this.stackV = this.vertex.slice();
-    this.stackE = this.edges.slice();
   }
 
-  drawVertex(mst, original) {
-    current = this.stackV.shift();
-    if (!mst) {
-      for (let e of this.vertex) {
-        if (this.visited.includes(e.name)) fill("red");
-        else fill("#26b6c9");
-        circle(e.x, e.y, 40);
-        fill("black");
-        text(e.name, e.x, e.y);
-      }
-      if (current) {
-        if (!this.visited.includes(current.name)) {
-          fill("green");
-          circle(current.x, current.y, 40);
-          fill("black");
-          text(current.name, current.x, current.y);
-        }
-        this.visited.push(current.name);
-      }
-    } else {
-      for (let e of this.vertex) {
-        if (original.visited.includes(e.name)) {
-          fill("#26b6c9");
-          circle(e.x + 400, e.y, 40);
-          fill("black");
-          text(e.name, e.x + 400, e.y);
-        }
-      }
+  draw() {
+    for (let value of this.edges) {
+      line(value.src.x, value.src.y, value.target.x, value.target.y);
+      fill(96, 215, 215);
+      circle(value.src.x, value.src.y, 20);
+      circle(value.target.x, value.target.y, 20);
+      fill("black");
+      text(value.src.name, value.src.x, value.src.y);
+      text(value.target.name, value.target.x, value.target.y);
+      text(
+        value.weight,
+        (value.src.x + value.target.x) / 2,
+        (value.src.y + value.target.y) / 2
+      );
     }
     noFill();
   }
 
-  drawLines(mst, original) {
-    current = this.stackE.shift();
-    if (!mst) {
-      for (let elem of this.edges) {
-        let vertexRef = this.vertex.filter(
-          (el) => el.name == elem.src || el.name == elem.target
-        );
+  drawMST() {
+    current = this.stackE.pop();
+    for (let i = 0; i < this.visited.length; i++) {
+      if (this.visited.includes(this.mst[i].src + this.mst[i].target)) {
+        let srcX = this.mst[i].src.x + windowWidth / 2;
+        let srcY = this.mst[i].src.y;
+        let tgtX = this.mst[i].target.x + windowWidth / 2;
+        let tgtY = this.mst[i].target.y;
+        line(srcX, srcY, tgtX, tgtY);
+        fill(96, 215, 215);
+        circle(srcX, srcY, 20);
+        circle(tgtX, tgtY, 20);
         fill("black");
-        line(vertexRef[0].x, vertexRef[0].y, vertexRef[1].x, vertexRef[1].y);
-        text(
-          elem.weight,
-          (vertexRef[0].x + vertexRef[1].x) / 2,
-          (vertexRef[0].y + vertexRef[1].y) / 2
-        );
-      }
-    } else {
-      for (let e of this.edges) {
-        if (
-          original.visited.includes(e.src) &&
-          original.visited.includes(e.target)
-        ) {
-          let vertexRef = this.vertex.filter(
-            (el) => el.name == e.src || el.name == e.target
-          );
-          fill("black");
-          line(
-            vertexRef[0].x + 400,
-            vertexRef[0].y,
-            vertexRef[1].x + 400,
-            vertexRef[1].y
-          );
-          text(
-            e.weight,
-            (vertexRef[0].x + vertexRef[1].x) / 2 + 400,
-            (vertexRef[0].y + vertexRef[1].y) / 2
-          );
-        }
+        text(this.mst[i].src.name, srcX, srcY);
+        text(this.mst[i].target.name, tgtX, tgtY);
+        text(this.mst[i].weight, (srcX + tgtX) / 2, (srcY + tgtY) / 2);
       }
     }
+    if (current) this.visited.push(current.src + current.target);
+
     noFill();
+  }
+  drawMSC() {
+    let minCost = 0;
+    for (let e of this.mst) {
+      minCost += e.weight;
+    }
+    fill("black");
+    text(
+      "Minimum Spanning Cost: " + minCost,
+      windowWidth - windowWidth / 4,
+      25
+    );
   }
 }

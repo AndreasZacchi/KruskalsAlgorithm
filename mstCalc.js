@@ -41,23 +41,16 @@ class UnionFind {
     return this.find(a) === this.find(b);
   }
 }
-function getMST(edges, graph) {
+function calcMST(vertex, edges) {
   let sortedEdges = edges.slice().sort((a, b) => a.weight - b.weight);
   let result = [];
+  let uf = new UnionFind(vertex);
   for (let i = 0; i < edges.length; i++) {
     current = sortedEdges.shift();
-    if (!uf.connected(current.src, current.target)) {
+    if (!uf.connected(current.src.name, current.target.name)) {
       result.push(current);
-      uf.union(current.src, current.target);
+      uf.union(current.src.name, current.target.name);
     }
   }
   return result;
-}
-function drawMSC(mst) {
-  let minCost = 0;
-  for (e of mst) {
-    minCost += e.weight;
-  }
-  fill("black");
-  text("Minimum Spanning Cost: " + minCost, 600, 25);
 }
