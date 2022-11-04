@@ -55,7 +55,7 @@ class Graph {
     fill("black");
     text(
       "Minimum Spanning Cost: " + minCost,
-      windowWidth - windowWidth / 4,
+      windowWidth - windowWidth / 2,
       25
     );
   }

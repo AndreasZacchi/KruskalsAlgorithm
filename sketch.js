@@ -3,12 +3,12 @@ function setup() {
   createCanvas(windowWidth, windowHeight);
   textAlign(CENTER, CENTER);
 
-  vertexAmount = 50;
+  vertexAmount = 7;
   edgesAmount = 2 * vertexAmount;
   vertex = [];
   edges = [];
   for (let i = 0; i < vertexAmount; i++) {
-    vertex.push(new Vertex(i));
+    vertex.push(new Vertex(makeID(2)));
   }
   for (let i = 0; i < edgesAmount; i++) {
     let v1 = random(vertex);
