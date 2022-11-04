@@ -1,7 +1,6 @@
 let g, gMST, uf;
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  textSize(10);
   textAlign(CENTER, CENTER);
 
   vertexAmount = 50;
@@ -36,8 +35,10 @@ let timer = 0;
 function draw() {
   if (millis() >= 400 + timer) {
     background("white");
+    textSize(10);
     g.draw();
     g.drawMST();
+    textSize(25);
     g.drawMSC();
 
     timer = millis();
