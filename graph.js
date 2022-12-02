@@ -11,16 +11,18 @@ class Graph {
     for (let value of this.edges) {
       line(value.src.x, value.src.y, value.target.x, value.target.y);
       fill(96, 215, 215);
-      circle(value.src.x, value.src.y, 20);
-      circle(value.target.x, value.target.y, 20);
+      circle(value.src.x, value.src.y, 30);
+      circle(value.target.x, value.target.y, 30);
       fill("black");
       text(value.src.name, value.src.x, value.src.y);
       text(value.target.name, value.target.x, value.target.y);
+      textSize(16);
       text(
-        value.weight,
+        value.weight / 1000,
         (value.src.x + value.target.x) / 2,
         (value.src.y + value.target.y) / 2
       );
+      textSize(12);
     }
     noFill();
   }
@@ -35,12 +37,14 @@ class Graph {
         let tgtY = this.mst[i].target.y;
         line(srcX, srcY, tgtX, tgtY);
         fill(96, 215, 215);
-        circle(srcX, srcY, 20);
-        circle(tgtX, tgtY, 20);
+        circle(srcX, srcY, 30);
+        circle(tgtX, tgtY, 30);
         fill("black");
         text(this.mst[i].src.name, srcX, srcY);
         text(this.mst[i].target.name, tgtX, tgtY);
-        text(this.mst[i].weight, (srcX + tgtX) / 2, (srcY + tgtY) / 2);
+        textSize(16);
+        text(this.mst[i].weight / 1000, (srcX + tgtX) / 2, (srcY + tgtY) / 2);
+        textSize(12);
       }
     }
     if (current) this.visited.push(current.src + current.target);
@@ -54,8 +58,8 @@ class Graph {
     }
     fill("black");
     text(
-      "Minimum Spanning Cost: " + minCost,
-      windowWidth - windowWidth / 2,
+      "Minimum Spanning Cost: " + minCost / 1000 + " km",
+      windowWidth - windowWidth / 2.5,
       25
     );
   }
